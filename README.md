@@ -6,7 +6,7 @@ The prerequisite is an OpenCage API key; if you don't have one, simply use this 
 
 The step by step guide can be found here:
 
-- [dev.to](https://dev.to/) at https://dev.to/tsamaya/
+- [dev.to](https://dev.to/) at https://dev.to/tsamaya/opencage-api-and-arcgis-api-for-javascript-55ga
 
 - locally : [TUTORIAL](/TUTORIAL.md)
 
