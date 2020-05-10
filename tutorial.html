@@ -1,0 +1,141 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Arcgis Search widget with OpenCAge Data API</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/light/main.css" />
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="viewDiv"></div>
+    <script src="https://js.arcgis.com/4.15/"></script>
+    <script>
+        require(['esri/Map', 'esri/views/MapView', 'esri/widgets/Search', 'esri/widgets/Search/SearchSource', 'esri/Graphic', 'esri/geometry/Point', 'esri/geometry/geometryEngine', 'esri/request'],
+            function (Map, MapView, Search, SearchSource, Graphic, Point, geometryEngine, esriRequest) {
+
+                var API_KEY = 'YOUR-API-KEY';
+                var OPENCAGEDATA_URL = 'https://api.opencagedata.com/geocode/v1/json';
+
+                function geocode(options) {
+                    return esriRequest(OPENCAGEDATA_URL, {
+                        query: {
+                            key: API_KEY,
+                            q: options.query,
+                            proximity: options.proximity,
+                            no_annotations: 1,
+                            limit: 6,
+                        },
+                        responseType: 'json',
+                    });
+                }
+
+                var map = new Map({
+                    basemap: 'topo',
+                });
+
+                var view = new MapView({
+                    container: 'viewDiv',
+                    map: map,
+                    center: [-2.547855, 54.00366], // lon, lat
+                    scale: 4000000,
+                });
+
+                // Custom SearchSource
+                var opencageSearchSource = new SearchSource({
+                    placeholder: 'example: W10',
+                    minSuggestCharacters: 3,
+                    getSuggestions: function (params) {
+                        var address = params.suggestTerm.replace(/ /g, '+');
+                        return geocode({
+                            query: address,
+                            proximity: view.center.latitude + ',' + view.center.longitude,
+                        }).then(function (response) {
+                            var suggestions = response.data.results.map(function (feature) {
+                                return {
+                                    key: 'name',
+                                    text: feature.formatted,
+                                    location: {
+                                        longitude: feature.geometry.lng,
+                                        latitude: feature.geometry.lat,
+                                    },
+                                    sourceIndex: params.sourceIndex,
+                                };
+                            });
+                            return suggestions;
+                        });
+                    },
+                    // Provide a getResults method to find
+                    // results from the suggestions, the device location or the text input
+                    getResults: function (params) {
+                        var query;
+                        // Perform a different query if a location is provided
+                        // HTML5 device location or suggestion selected
+                        if (params.location) {
+                            query = params.location.latitude + ',' + params.location.longitude;
+                        } else {
+                            query = params.suggestResult.text.replace(/ /g, '+');
+                        }
+
+                        return geocode({
+                            query: query,
+                        }).then(function (results) {
+                            // Parse the results of your custom search
+                            var searchResults = results.data.results.map(function (feature) {
+                                // Create a Graphic the Search widget can display
+                                var graphic = new Graphic({
+                                    geometry: new Point({
+                                        x: feature.geometry.lng,
+                                        y: feature.geometry.lat,
+                                    }),
+                                    attributes: {
+                                        name: feature.formatted,
+                                        label: feature.formatted,
+                                        props: feature.properties,
+                                    },
+                                });
+                                var buffer = geometryEngine.geodesicBuffer(
+                                    graphic.geometry,
+                                    250,
+                                    'meters'
+                                );
+                                // Return a Search Result
+                                var searchResult = {
+                                    extent: buffer.extent,
+                                    feature: graphic,
+                                    name: feature.formatted,
+                                };
+                                return searchResult;
+                            });
+
+                            // Return an array of Search Results
+                            return searchResults;
+                        });
+                    },
+                });
+
+                // Search widget
+                var searchWidget = new Search({
+                    view: view,
+                    sources: [opencageSearchSource],
+                    includeDefaultSources: false,
+                });
+
+                view.ui.add(searchWidget, "top-right");
+            });
+
+    </script>
+
+</body>
+
+</html>
