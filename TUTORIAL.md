@@ -19,7 +19,7 @@ The Mozilla Developer Network has an excellent guide on setting up a [local deve
 
 **Online**
 
-You can use sites such as [CodesSndbox](https://codesandbox.io/), [JS Bin](https://jsbin.com/), [CodePen](https://codepen.io/) and our own [ArcGIS API for JavaScript sandbox](https://developers.arcgis.com/javascript/latest/sample-code/sandbox/index.html?sample=intro-mapview)
+You can use sites such as [CodeSandbox](https://codesandbox.io/), [JS Bin](https://jsbin.com/), [CodePen](https://codepen.io/) and our own [ArcGIS API for JavaScript sandbox](https://developers.arcgis.com/javascript/latest/sample-code/sandbox/index.html?sample=intro-mapview)
 
 ## Tutorial
 
@@ -35,7 +35,7 @@ First, set up a basic HTML document:
       name="viewport"
       content="initial-scale=1,maximum-scale=1,user-scalable=no"
     />
-    <title>Arcgis Search widget with OpenCAge Data API</title>
+    <title>ArcGIS Search widget with OpenCage Data API</title>
   </head>
 
   <body></body>
@@ -59,7 +59,7 @@ Inside the `<body>` tag, reference the ArcGIS API for JavaScript using `<script>
 
 ### Create a map
 
-In the `<head>` section add a style tag:
+In the `<head>` section add a `<style>` tag:
 
 ```html
 <style>
@@ -74,7 +74,7 @@ In the `<head>` section add a style tag:
 </style>
 ```
 
-In the `<body>` section add a `<div>` tag before the `<script`> tage. This `<div>` will be the map view container:
+In the `<body>` section add a `<div>` tag before the `<script>` tag. This `<div>` will be the map view container:
 
 ```html
 <div id="viewDiv"></div>
@@ -110,22 +110,22 @@ require([ 'esri/Map', 'esri/views/MapView', 'esri/widgets/Search' ],
 function(Map, MapView, Search) {
 ```
 
-At the end of the code in the main function, create a `Search` widget and set the view. Add the widget to the top right corner of the view.
+At the end of the code in the main function, create a `Search` widget and set the view. Add the widget to the top right corner of the `view`.
 
-```javasript
+```javascript
 // Search widget
 var searchWidget = new Search({
-    view: view
+  view: view,
 });
 
-view.ui.add(searchWidget, "top-right");
+view.ui.add(searchWidget, 'top-right');
 ```
 
 Run the code and try searching for the following:
 
 - London
 - Buckingham Palace
-- index.home.raft (sorry joking, it is a different [example](https://github.com/what3words/arcgis-javascript-samples))
+- ///index.home.raft (sorry joking, it is a different [example](https://github.com/what3words/arcgis-javascript-samples))
 - -0.20358600,51.521251
 
 ### Add the custom source : OpenCage Data
@@ -135,7 +135,7 @@ In the `require` statement, add references to the modules:
 - [SearchSource](https://developers.arcgis.com/javascript/latest/api-reference/esri-widgets-Search-SearchSource.html) the custom source,
 - [Graphic](https://developers.arcgis.com/javascript/latest/api-reference/esri-Graphic.html) so the Search widget can display a point result,
 - [Point](https://developers.arcgis.com/javascript/latest/api-reference/esri-geometry-Point.html) used with the Graphic,
-- [geometryEngine](https://developers.arcgis.com/javascript/latest/api-reference/esri-geometry-geometryEngine.html) to compute a buffer around the searhed location,
+- [geometryEngine](https://developers.arcgis.com/javascript/latest/api-reference/esri-geometry-geometryEngine.html) to compute a buffer around the searched location,
 - [request](https://developers.arcgis.com/javascript/latest/api-reference/esri-request.html) for the API request to OpenCage Data API.
 
 ```javascript
@@ -162,7 +162,7 @@ require([
 });
 ```
 
-Create a function for the geocoding operations at the begining of the module (AMD require is only here for hint purpose):
+Create a function for the geocoding operations at the beginning of the module (AMD require is only here for hint purpose):
 
 ```javascript
 require([
@@ -191,7 +191,7 @@ require([
 });
 ```
 
-Before the Search widget create custom SearchSource:
+Before the Search widget create the custom SearchSource:
 
 ```javascript
 // Custom SearchSource
@@ -268,7 +268,7 @@ var opencageSearchSource = new SearchSource({
 });
 ```
 
-Update the search widget disabling the Esri's world geocoder:
+Update the search widget, disabling the Esri's World Geocoder:
 
 ```javascript
 var searchWidget = new Search({
@@ -281,17 +281,21 @@ var searchWidget = new Search({
 ### Congratulations, you're done!
 
 Your app should look something like this:
-Inline-style:
-![Screenshot](./resources/screenshot.png 'Arcgis Search widget with OpenCAge Data API')
 
-## Final note
+![Screenshot](https://raw.githubusercontent.com/tsamaya/opencage-esrijs/master/resources/screenshot.png 'ArcGIS Search widget with OpenCage Data API')
+
+Try searching for the following:
+
+- London
+- Buckingham Palace
+- 51.521251,-0.20358600 (yes here it is latitude, longitude)
+
+## Thank for reading 🙏
 
 You can find the sources in this [GitHub repository](https://github.com/tsamaya/opencage-esrijs)
 
-- [tutorial.html](./tutorial.html) this step by step tutorial
-- [index.html](./index.html) an advanced version with an API key prompt, using localStorage for further usage and a basemap widget, as you can aslo be an addict to the National Geophic basemap, and split files (html, css, js).
-
-## Thank for reading 🙏
+- [tutorial.html](https://github.com/tsamaya/opencage-esrijs/blob/master/tutorial.html) this step by step tutorial where you only have to change `YOUR-API-KEY`,
+- [index.html](https://github.com/tsamaya/opencage-esrijs/blob/master/index.html) an advanced version with an API key prompt, using localStorage for further usage and a basemap widget, as you can also be an addict to the National Geographic basemap, and split files (html, css, js).
 
 Was this post helpful? Don't forget to share because Sharing is Caring.
 
